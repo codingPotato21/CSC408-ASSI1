@@ -33,7 +33,7 @@ class DialogAndWelcomeBot(DialogBot):
             if member.id != turn_context.activity.recipient.id:
                 await turn_context.send_activity(
                     MessageFactory.text(
-                        f"Welcome to Complex Dialog Bot {member.name}. This bot provides a complex conversation, with "
-                        f"multiple dialogs. Type anything to get started. "
+                        f"Welcome to AD-Police Service Bot. This bot helps redirect you to your selected "
+                        f"service page, and informs you about the requirements for the service. "
                     )
                 )
