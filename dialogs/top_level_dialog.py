@@ -9,6 +9,7 @@ from botbuilder.dialogs import (
     ComponentDialog,
 )
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, NumberPrompt
+from botbuilder.schema import ChannelAccount, CardAction, ActionTypes, SuggestedActions
 
 from data_models import UserProfile
 from dialogs.review_selection_dialog import ReviewSelectionDialog
@@ -30,9 +31,8 @@ class TopLevelDialog(ComponentDialog):
             WaterfallDialog(
                 "WFDialog",
                 [
-                    self.name_step,
-                    self.age_step,
-                    self.start_selection_step,
+                    self.initial_step,
+                    self.second_step,
                     self.acknowledgement_step,
                 ],
             )
@@ -40,44 +40,47 @@ class TopLevelDialog(ComponentDialog):
 
         self.initial_dialog_id = "WFDialog"
 
-    async def name_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+    async def initial_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         # Create an object in which to collect the user's information within the dialog.
         step_context.values[self.USER_INFO] = UserProfile()
 
-        # Ask the user to enter their name.
-        prompt_options = PromptOptions(
-            prompt=MessageFactory.text("Please enter your name.")
+        """
+        Creates and sends an activity with suggested actions to the user. When the user
+        clicks one of the buttons the text value from the "CardAction" will be displayed
+        in the channel just as if the user entered the text. There are multiple
+        "ActionTypes" that may be used for different situations.
+        """
+
+        prompt = MessageFactory.text("You can ask the bot about a service you are interested in or select to view the full list of services below:")
+
+        prompt.suggested_actions = SuggestedActions(
+            actions=[
+                CardAction(
+                    title="Show list of all available services",
+                    type=ActionTypes.im_back,
+                    value="Show list of all available services",
+                    #image="https://via.placeholder.com/20/FF0000?text=R",
+                    #image_alt_text=">> ",
+                )
+            ]
         )
+
+        prompt_options = PromptOptions(
+            prompt
+        )
+
         return await step_context.prompt(TextPrompt.__name__, prompt_options)
 
-    async def age_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        # Set the user's name to what they entered in response to the name prompt.
-        user_profile = step_context.values[self.USER_INFO]
-        user_profile.name = step_context.result
-
-        # Ask the user to enter their age.
-        prompt_options = PromptOptions(
-            prompt=MessageFactory.text("Please enter your age.")
-        )
-        return await step_context.prompt(NumberPrompt.__name__, prompt_options)
-
-    async def start_selection_step(
-        self, step_context: WaterfallStepContext
-    ) -> DialogTurnResult:
-        # Set the user's age to what they entered in response to the age prompt.
+    async def second_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         user_profile: UserProfile = step_context.values[self.USER_INFO]
-        user_profile.age = step_context.result
+        text = step_context.result.lower()
 
-        if user_profile.age < 25:
-            # If they are too young, skip the review selection dialog, and pass an empty list to the next step.
-            await step_context.context.send_activity(
-                MessageFactory.text("You must be 25 or older to participate.")
-            )
-
-            return await step_context.next([])
-
-        # Otherwise, start the review selection dialog.
-        return await step_context.begin_dialog(ReviewSelectionDialog.__name__)
+        if text == "show list of all available services":
+            # start the review selection dialog.
+            return await step_context.begin_dialog(ReviewSelectionDialog.__name__)
+        else:
+            return await step_context.end_dialog(user_profile)
+        
 
     async def acknowledgement_step(
         self, step_context: WaterfallStepContext
@@ -86,10 +89,13 @@ class TopLevelDialog(ComponentDialog):
         user_profile: UserProfile = step_context.values[self.USER_INFO]
         user_profile.companies_to_review = step_context.result
 
-        # Thank them for participating.
-        await step_context.context.send_activity(
-            MessageFactory.text(f"Thanks for participating, {user_profile.name}.")
+        # Show information about the selected service
+        message = (
+            f"You have selected **{user_profile.companies_to_review[0]}**. Here is the available information on the service: "
         )
+
+        # Thank them for participating.
+        await step_context.context.send_activity(MessageFactory.text(message))
 
         # Exit the dialog, returning the collected user information.
         return await step_context.end_dialog(user_profile)

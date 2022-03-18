@@ -1,10 +1,13 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
 
+from typing import List
+
 from botbuilder.core import ActivityHandler, ConversationState, UserState, TurnContext
 from botbuilder.dialogs import Dialog
-from helpers.dialog_helper import DialogHelper
 
+from helpers.dialog_helper import DialogHelper
+from dialogs.review_selection_dialog import ReviewSelectionDialog
 
 class DialogBot(ActivityHandler):
     def __init__(
@@ -13,6 +16,7 @@ class DialogBot(ActivityHandler):
         user_state: UserState,
         dialog: Dialog,
     ):
+
         if conversation_state is None:
             raise Exception(
                 "[DialogBot]: Missing parameter. conversation_state is required"
@@ -34,6 +38,7 @@ class DialogBot(ActivityHandler):
         await self.user_state.save_changes(turn_context, False)
 
     async def on_message_activity(self, turn_context: TurnContext):
+        # Continue or run dialog
         await DialogHelper.run_dialog(
             self.dialog,
             turn_context,

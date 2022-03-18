@@ -34,12 +34,7 @@ class MainDialog(ComponentDialog):
     async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         user_info: UserProfile = step_context.result
 
-        companies = (
-            "no companies"
-            if len(user_info.companies_to_review) == 0
-            else " and ".join(user_info.companies_to_review)
-        )
-        status = f"You are signed up to review {companies}."
+        status = f"Thank you for using the AD-Police guide Bot."
 
         await step_context.context.send_activity(MessageFactory.text(status))
 
