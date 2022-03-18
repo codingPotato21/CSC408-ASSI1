@@ -1,1 +1,13 @@
+## virtual inventory directory
 /venv
+
+## python compiler files
+*.pyc
+
+## Python
+__pycache__/
+env/
+
+## Microsoft Azure Build Output
+csx/
+*.build.csdef
