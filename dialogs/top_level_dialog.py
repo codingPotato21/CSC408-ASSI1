@@ -80,7 +80,7 @@ class TopLevelDialog(ComponentDialog):
             return await step_context.begin_dialog(ReviewSelectionDialog.__name__)
         else:
             return await step_context.end_dialog(user_profile)
-        
+
 
     async def acknowledgement_step(
         self, step_context: WaterfallStepContext
@@ -93,8 +93,8 @@ class TopLevelDialog(ComponentDialog):
         message = (
             f"You have selected **{user_profile.companies_to_review[0]}**. Here is the available information on the service: \n\n"
             f"**Description:** {user_profile.companies_to_review[1]}\n\n"
-            f"**Requirements:** {user_profile.companies_to_review[2]}\n\n"
-            f"**Service-URL:** {user_profile.companies_to_review[3]}\n\n"
+        #    f"**Requirements:** {user_profile.companies_to_review[2]}\n\n"
+        #    f"**Service-URL:** {user_profile.companies_to_review[3]}\n\n"
         )
 
         # Thank them for participating.
