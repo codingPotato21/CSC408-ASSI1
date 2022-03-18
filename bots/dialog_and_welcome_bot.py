@@ -39,13 +39,8 @@ class DialogAndWelcomeBot(DialogBot):
             if member.id != turn_context.activity.recipient.id:
                 await turn_context.send_activity(
                     MessageFactory.text(
-<<<<<<< Updated upstream
-                        f"Welcome to AD Police Service Bot. This bot helps redirect you to your selected "
-                        f"service page, and informs you about the requirements for the service. "
-=======
                         f"Welcome to AD-Police Bot {member.name}. "
                         f"This bot will assist you in finding services offered on the AD-Police website."
->>>>>>> Stashed changes
                     )
                 )
 

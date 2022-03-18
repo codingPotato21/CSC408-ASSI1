@@ -72,4 +72,9 @@ class ReviewSelectionDialog(ComponentDialog):
         choice: FoundChoice = step_context.result
         selected.append(choice.value)
 
+        if (choice.value == "Fines' Materials Inquiry"):
+            selected.append("This service allows you to inquire about fine materials.")
+            selected.append("No requirements are needed for this service.")
+            selected.append("https://www.google.com")
+
         return await step_context.end_dialog(selected)
