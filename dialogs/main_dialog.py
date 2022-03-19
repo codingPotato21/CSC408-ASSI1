@@ -42,4 +42,5 @@ class MainDialog(ComponentDialog):
         accessor = self.user_state.create_property("UserProfile")
         await accessor.set(step_context.context, user_info)
 
-        return await step_context.end_dialog()
+        # Start a new service dialog
+        return await step_context.replace_dialog(MainDialog.__name__, step_context.result)

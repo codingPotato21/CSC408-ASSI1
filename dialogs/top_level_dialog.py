@@ -1,6 +1,8 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
 
+from difflib import SequenceMatcher
+
 from botbuilder.core import MessageFactory
 from botbuilder.dialogs import (
     WaterfallDialog,
@@ -13,7 +15,7 @@ from botbuilder.schema import ChannelAccount, CardAction, ActionTypes, Suggested
 
 from data_models import UserProfile
 from dialogs.review_selection_dialog import ReviewSelectionDialog
-
+from dialogs.search_selection_dialog import SearchSelectionDialog
 
 class TopLevelDialog(ComponentDialog):
     def __init__(self, dialog_id: str = None):
@@ -25,7 +27,11 @@ class TopLevelDialog(ComponentDialog):
         self.add_dialog(TextPrompt(TextPrompt.__name__))
         self.add_dialog(NumberPrompt(NumberPrompt.__name__))
 
-        self.add_dialog(ReviewSelectionDialog(ReviewSelectionDialog.__name__))
+        self.selectionDialog = ReviewSelectionDialog(ReviewSelectionDialog.__name__)
+        self.add_dialog(self.selectionDialog)
+
+        self.searchDialog = SearchSelectionDialog(SearchSelectionDialog.__name__)
+        self.add_dialog(self.searchDialog)
 
         self.add_dialog(
             WaterfallDialog(
@@ -76,11 +82,28 @@ class TopLevelDialog(ComponentDialog):
         text = step_context.result.lower()
 
         if text == "show list of all available services":
-            # start the review selection dialog.
+            # Start the review selection dialog.
             return await step_context.begin_dialog(ReviewSelectionDialog.__name__)
         else:
-            return await step_context.end_dialog(user_profile)
+            # Try to parse the user input.
+            services_list = self.selectionDialog.available_services
+            match_percentage = []
 
+            # IK, it's janky but im too lazy and sick of this.
+            for item in services_list:
+                s = SequenceMatcher(None, services_list[services_list.index(item)].lower(), text.lower())
+                match_percentage.append(round(s.ratio(), 2))
+
+            m = max(match_percentage)
+            top_matches = [i for i, j in enumerate(match_percentage) if j == m]
+
+            # Create a service list for the search dialog.
+            service_list = []
+            for service_index in top_matches:
+                service_list.append(self.selectionDialog.available_services[service_index])
+            self.searchDialog.available_services = service_list
+
+            return await step_context.begin_dialog(SearchSelectionDialog.__name__)
 
     async def acknowledgement_step(
         self, step_context: WaterfallStepContext

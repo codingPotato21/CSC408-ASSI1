@@ -14,25 +14,15 @@ from botbuilder.dialogs.choices import Choice, FoundChoice
 from botbuilder.core import MessageFactory
 
 
-class ReviewSelectionDialog(ComponentDialog):
+class SearchSelectionDialog(ComponentDialog):
     def __init__(self, dialog_id: str = None):
-        super(ReviewSelectionDialog, self).__init__(
-            dialog_id or ReviewSelectionDialog.__name__
+        super(SearchSelectionDialog, self).__init__(
+            dialog_id or SearchSelectionDialog.__name__
         )
 
         self.COMPANIES_SELECTED = "value-companiesSelected"
-        #self.DONE_OPTION = "cancel"
 
-        self.available_services = [
-            "Fines Materials Inquiry",
-            "Vehicle Accidents Inquiry",
-            "Payment Receipts Inquiry",
-            "Vehicle Certificate Inquiry",
-            "Reserved Plates Inquiry",
-            "Traffic Fines Inquiry",
-            "Registered Vehicles Inquiry",
-            "Other Services",
-        ]
+        self.available_services = None
 
         self.add_dialog(ChoicePrompt(ChoicePrompt.__name__))
         self.add_dialog(
@@ -50,6 +40,16 @@ class ReviewSelectionDialog(ComponentDialog):
         selected: [str] = step_context.options if step_context.options is not None else []
         step_context.values[self.COMPANIES_SELECTED] = selected
 
+        # If the selection list is empty gracefully exit
+        if self.available_services is None:
+            status = f"Sorry i am unable to find the service you are looking for."
+            await step_context.context.send_activity(MessageFactory.text(status))
+            return await step_context.end_dialog(selected)
+        elif len(self.available_services) == 0:
+            status = f"Sorry i am unable to find the service you are looking for."
+            await step_context.context.send_activity(MessageFactory.text(status))
+            return await step_context.end_dialog(selected)
+
         # create a list of options to choose, with already selected items removed.
         options = self.available_services.copy()
         #options.append(self.DONE_OPTION)
@@ -58,7 +58,7 @@ class ReviewSelectionDialog(ComponentDialog):
 
         # prompt with the list of choices
         prompt_options = PromptOptions(
-            prompt=MessageFactory.text(f"Please choose a service to review."),
+            prompt=MessageFactory.text(f"The following services match your search, Please choose a service to review."),
             retry_prompt=MessageFactory.text("Please choose an option from the list."),
             choices=self._to_choices(options),
         )
@@ -75,14 +75,14 @@ class ReviewSelectionDialog(ComponentDialog):
         choice: FoundChoice = step_context.result
         selected.append(choice.value)
 
-        if (choice.value == "Fines Materials Inquiry"):
+        if (choice.value == "Fines' Materials Inquiry"):
             selected.append("This service allows you to search for traffic fines' materials values and black points. \n\n"
             f"**Requirment:** Emirate and Material code \n\n"
             f"* Service-URL: https://es.adpolice.gov.ae/trafficservices/PublicServices/MaterialsInquiry.aspx?Culture=en")
         #    selected.append("Emirate and Material code")
         #    selected.append("https://es.adpolice.gov.ae/trafficservices/PublicServices/MaterialsInquiry.aspx?Culture=en")
 
-        elif (choice.value == "Vehicle Accidents Inquiry"):
+        elif (choice.value == "Vehicle's Accidents Inquiry"):
             selected.append("This service allows you to retrieve all accidents happened for a specific vehicle. \n\n"
                 f"**Requirment:** Chassis Number \n\n"
                 f"* Service-URL: https://es.adpolice.gov.ae/trafficservices/PublicServices/AccidentsInquiry.aspx?Culture=en")
@@ -96,7 +96,7 @@ class ReviewSelectionDialog(ComponentDialog):
         #    selected.append("Receipt Number")
         #    selected.append("https://es.adpolice.gov.ae/trafficservices/PublicServices/ReceiptsInquiry.aspx?Culture=en")
 
-        elif (choice.value == "Vehicle Certificate Inquiry"):
+        elif (choice.value == "Vehicle's Certificate Inquiry"):
             selected.append("This service allows you to inquire about about a specific vehicle's certificate using its number. \n\n"
                 f"**Requirment:** Certificate Number \n\n"
                 f"* Service-URL: https://es.adpolice.gov.ae/trafficservices/PublicServices/CertificateInquiry.aspx?Culture=en")
