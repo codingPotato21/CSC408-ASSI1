@@ -18,14 +18,9 @@ Keep in mind that the virtual environment needs to be activated every time when 
 needs to be worked on using the second command. The first command for creating the virtual
 environment needs to be run only once when creating the project.
 
-### Getting the required libraries
+### Installing Required Libraries
 
-- `pip install botbuilder-core`
-- `pip install asyncio`
-- `pip install aiohttp`
-- `pip install cookiecutter`
-- `pip install botbuilder-integration-aiohttp`
-- `pip install botbuilder-dialogs`
+- `pip install -r requirements.txt`
 
 ### Running the Bot
 
