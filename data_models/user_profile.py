@@ -3,7 +3,7 @@
 ## Licensed under the MIT License.
 
 ## - Project Info -
-# Github-repo: https://github.com/codingPotato69/CSC408-ASSI1
+# Github-repo: https://github.com/codingPotato21/CSC408-ASSI1
 # Contributors: 
 #       1- Adnan Youssef
 #       2- Naji Mohammed
@@ -15,6 +15,6 @@ from typing import List
 
 class UserProfile:
     def __init__(
-        self, companies_to_review: List[str] = None
+        self, services_to_review: List[str] = None
     ):
-        self.companies_to_review: List[str] = companies_to_review
+        self.services_to_review: List[str] = services_to_review

@@ -3,7 +3,7 @@
 ## Licensed under the MIT License.
 
 ## - Project Info -
-# Github-repo: https://github.com/codingPotato69/CSC408-ASSI1
+# Github-repo: https://github.com/codingPotato21/CSC408-ASSI1
 # Contributors: 
 #       1- Adnan Youssef
 #       2- Naji Mohammed
@@ -74,8 +74,6 @@ class TopLevelDialog(ComponentDialog):
                     title="Show list of all available services",
                     type=ActionTypes.im_back,
                     value="Show list of all available services",
-                    #image="https://via.placeholder.com/20/FF0000?text=R",
-                    #image_alt_text=">> ",
                 )
             ]
         )
@@ -119,14 +117,12 @@ class TopLevelDialog(ComponentDialog):
     ) -> DialogTurnResult:
         # Set the user's company selection to what they entered in the review-selection dialog.
         user_profile: UserProfile = step_context.values[self.USER_INFO]
-        user_profile.companies_to_review = step_context.result
+        user_profile.services_to_review = step_context.result
 
         # Show information about the selected service
         message = (
-            f"You have selected **{user_profile.companies_to_review[0]}**. Here is the available information on the service: \n\n"
-            f"**Description:** {user_profile.companies_to_review[1]}\n\n"
-        #    f"**Requirements:** {user_profile.companies_to_review[2]}\n\n"
-        #    f"**Service-URL:** {user_profile.companies_to_review[3]}\n\n"
+            f"You have selected **{user_profile.services_to_review[0]}**. Here is the available information on the service: \n\n"
+            f"**Description:** {user_profile.services_to_review[1]}\n\n"
         )
 
         # Thank them for participating.
