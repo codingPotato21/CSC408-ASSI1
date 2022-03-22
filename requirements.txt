@@ -4,7 +4,7 @@ arrow==1.2.2
 async-timeout==3.0.1
 asyncio==3.4.3
 attrs==21.4.0
-babel>=2.9.1
+babel
 binaryornot==0.4.4
 botbuilder-core==4.14.2
 botbuilder-dialogs==4.14.2
